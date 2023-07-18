@@ -549,19 +549,37 @@ def _maybe_rerun_with_macos_fixes():
 
 
 def main():
-    # There a number of macOS issues we can fix with env vars
-    # and/or relaunching a subprocess
-    _maybe_rerun_with_macos_fixes()
+    try:
+        # There a number of macOS issues we can fix with env vars
+        # and/or relaunching a subprocess
+        _maybe_rerun_with_macos_fixes()
 
-    # Prevent https://github.com/napari/napari/issues/3415
-    # This one fix is needed _after_ a potential relaunch,
-    # that's why it's here and not in _maybe_rerun_with_macos_fixes()
-    if sys.platform == "darwin":
-        import multiprocessing
+        # Prevent https://github.com/napari/napari/issues/3415
+        # This one fix is needed _after_ a potential relaunch,
+        # that's why it's here and not in _maybe_rerun_with_macos_fixes()
+        if sys.platform == "darwin":
+            import multiprocessing
 
-        multiprocessing.set_start_method('fork')
+            multiprocessing.set_start_method('fork')
 
-    _run()
+        _run()
+    except Exception as e:
+        # qtpy is also imported in _maybe_rerun_with_macos_fixes() on macos
+        # so we need to catch the ImportError here
+        from qtpy import QtBindingsNotFoundError
+
+        if isinstance(e, QtBindingsNotFoundError):
+            msg = (
+                "napari requires either PyQt5 or PySide2 to be installed.\n\n"
+                "If you are using pip, you can install either with:\n"
+                "  $ pip install -U napari[pyqt]\n"
+                "  $ pip install -U napari[pyside]\n\n"
+                "If you are using conda, you can install either with:\n"
+                "  $ conda install pyqt\n"
+                "  $ conda install pyside2\n"
+            )
+            raise RuntimeError(msg) from e  # noqa: TRY004
+        raise
 
 
 if __name__ == '__main__':
