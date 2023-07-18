@@ -566,9 +566,12 @@ def main():
     except Exception as e:
         # qtpy is also imported in _maybe_rerun_with_macos_fixes() on macos
         # so we need to catch the ImportError here
-        from qtpy import QtBindingsNotFoundError
-
-        if isinstance(e, QtBindingsNotFoundError):
+        # importing the exception type also raises the exception itself!
+        # so we have to do it manually with string comparisons
+        if (
+            e.__class__.__name__ == "QtBindingsNotFoundError"
+            and e.__module__ == "qtpy"
+        ):
             msg = (
                 "napari requires either PyQt5 or PySide2 to be installed.\n\n"
                 "If you are using pip, you can install either with:\n"
