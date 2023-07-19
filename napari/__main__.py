@@ -575,8 +575,8 @@ def main():
             msg = (
                 "napari requires either PyQt5 or PySide2 to be installed.\n\n"
                 "If you are using pip, you can install either with:\n"
-                "  $ pip install -U napari[pyqt]\n"
-                "  $ pip install -U napari[pyside]\n\n"
+                "  $ pip install -U 'napari[pyqt]'\n"
+                "  $ pip install -U 'napari[pyside]'\n\n"
                 "If you are using conda, you can install either with:\n"
                 "  $ conda install pyqt\n"
                 "  $ conda install pyside2\n"
